@@ -47,9 +47,9 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
                 return;
               }
               callbackId_ = inputEventManager->registerAddListener(
-                [&](string eventType,int tag,rnsKeyAction keyAction,rnsKey keyCode, bool keyRepeat) {
+                [&](rnsKeyAction keyAction,rnsKey keyCode, bool keyRepeat) {
                   // lambda for RSkinputEvent manager registation.-starting
-                  dynamic obj = dynamic::object("pressedKey", eventType)("action",(int)keyAction)("keyCode",(int)keyCode);
+                  dynamic obj = dynamic::object("pressedKey", RNSKeyMap[keyCode])("action",(int)keyAction)("keyCode",(int)keyCode);
                   string eventName =  keyRepeat? string("onKeyMultiple"): keyAction?string("onKeyUp"):string("onKeyDown");
                   sendEventWithName(eventName,obj);
                 });//lambda for RSkinputEvent manager registation-end
