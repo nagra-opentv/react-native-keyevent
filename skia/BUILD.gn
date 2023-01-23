@@ -7,19 +7,19 @@ config("LibRnRNKeyEvent_config") {
     "-Wno-header-hygiene",
   ]
 
-  include_dirs = [ "./",
-                  "//react-native/ReactCommon/",
-                  ]
+  include_dirs = [
+    "./",
+    "//react-native/ReactCommon/",
+  ]
 }
 
 rn_cxx_component("RnRNKeyEvent") {
 
   # RNS Native module and its dependencies
   sources = [
-             "RNKeyEvent.h",
-             "RNKeyEvent.cpp"
+    "RNKeyEvent.h",
+    "RNKeyEvent.cpp"
   ]
-
 
   public_configs = [ ":LibRnRNKeyEvent_config" ]
   public_configs += [ "//build/secondary/folly:folly_config" ]
@@ -31,11 +31,7 @@ rn_cxx_component("RnRNKeyEvent") {
     "//react-native/ReactCommon/callinvoker",
     "//react-native/ReactCommon/jsi:jsi",
     "//react-native/ReactCommon/react/nativemodule/core",
-    "//react-native/ReactCommon/react/renderer/graphics",
     "//react-native/ReactCommon/runtimeexecutor",
-    "//third_party/boost:headers_only",
-    "//third_party/double-conversion:double-conversion",
-    "//third_party/glog:glog",
   ]
 
   with_exceptions = true
