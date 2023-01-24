@@ -47,10 +47,10 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
                 return;
               }
               callbackId_ = inputEventManager->registerAddListener(
-                [&](rnsKeyAction keyAction,rnsKey keyCode, bool keyRepeat) {
+                [&](react::RskKeyInput keyInput) {
                   // lambda for RSkinputEvent manager registation.-starting
-		  folly::dynamic obj = folly::dynamic::object("pressedKey", RNSKeyMap[keyCode])("action",(int)keyAction)("keyCode",(int)keyCode);
-		  std::string eventName =  keyRepeat? std::string("onKeyMultiple"): keyAction? std::string("onKeyUp"): std::string("onKeyDown");
+		              folly::dynamic obj = folly::dynamic::object("pressedKey", RNSKeyMap[keyInput.key_])("action",(int)keyInput.action_)("keyCode",(int)keyInput.key_);
+		              std::string eventName =  keyInput.repeat_? std::string("onKeyMultiple"): keyInput.action_ ? std::string("onKeyUp"): std::string("onKeyDown");
                   sendEventWithName(eventName,obj);
                 });//lambda for RSkinputEvent manager registation-end
             }

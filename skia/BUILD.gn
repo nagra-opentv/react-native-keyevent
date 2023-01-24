@@ -27,6 +27,7 @@ rn_cxx_component("RNKeyEvent") {
     "//folly",
     "//folly:async",
     "//folly:synchronization",
+    "//skia",
     "//react-native/ReactCommon/callinvoker",
     "//react-native/ReactCommon/jsi:jsi",
     "//react-native/ReactCommon/react/nativemodule/core",
