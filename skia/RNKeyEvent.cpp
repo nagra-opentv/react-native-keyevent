@@ -5,12 +5,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-#include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/Instance.h>
+#include <cxxreact/JsArgumentHelpers.h>
 
 #include "RNKeyEvent.h"
-#include "ReactSkia/utils/RnsLog.h"
 
 namespace facebook {
 namespace xplat {
