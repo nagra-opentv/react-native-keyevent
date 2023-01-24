@@ -20,7 +20,7 @@ RNKeyEventModule::RNKeyEventModule() {
 }
 
 RNKeyEventModule::~RNKeyEventModule() {
-  RNS_LOG_DEBUG("   calling disstructor  ");
+  RNS_LOG_DEBUG("   calling distructor  ");
   auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
   if ( !inputEventManager ) {
     RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
