@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1994-2022 OpenTV, Inc. and Nagravision S.A.
+* Copyright (C) 1994-2023 OpenTV, Inc. and Nagravision S.A.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,9 @@
 #include "ReactSkia/core_modules/RSkInputEventManager.h"
 #include "ReactSkia/utils/RnsUtils.h"
 
-using namespace std;
-using namespace folly;
 
 namespace facebook {
 namespace xplat {
-using namespace std;
 class RNKeyEventModule : public module::CxxModule{
  private:
   int  keyEventId_= 0;

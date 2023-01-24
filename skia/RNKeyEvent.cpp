@@ -37,7 +37,7 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
   return {
       Method(
           "addListener",
-          [&] (dynamic args) {
+          [&] (folly::dynamic args) {
             ++keyEventId_;
             if ( keyEventId_ == 1 ) {
               auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
@@ -49,8 +49,8 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
               callbackId_ = inputEventManager->registerAddListener(
                 [&](rnsKeyAction keyAction,rnsKey keyCode, bool keyRepeat) {
                   // lambda for RSkinputEvent manager registation.-starting
-                  dynamic obj = dynamic::object("pressedKey", RNSKeyMap[keyCode])("action",(int)keyAction)("keyCode",(int)keyCode);
-                  string eventName =  keyRepeat? string("onKeyMultiple"): keyAction?string("onKeyUp"):string("onKeyDown");
+		  folly::dynamic obj = folly::dynamic::object("pressedKey", RNSKeyMap[keyCode])("action",(int)keyAction)("keyCode",(int)keyCode);
+		  std::string eventName =  keyRepeat? std::string("onKeyMultiple"): keyAction? std::string("onKeyUp"): std::string("onKeyDown");
                   sendEventWithName(eventName,obj);
                 });//lambda for RSkinputEvent manager registation-end
             }
@@ -59,7 +59,7 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
 
       Method(
           "removeListeners",
-          [&] (dynamic args) {
+          [&] (folly::dynamic args) {
             if ( keyEventId_ == 1 ) {
               auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
               if ( !inputEventManager ) {

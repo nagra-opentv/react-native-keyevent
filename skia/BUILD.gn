@@ -1,5 +1,5 @@
 import("//react-native/common.gni")
-config("LibRnRNKeyEvent_config") {
+config("LibRNKeyEvent_config") {
   cflags_cc = [ "-std=c++17","-g"]
   cflags_cc += [
     "-Wno-extra-semi",
@@ -13,7 +13,7 @@ config("LibRnRNKeyEvent_config") {
   ]
 }
 
-rn_cxx_component("RnRNKeyEvent") {
+rn_cxx_component("RNKeyEvent") {
 
   # RNS Native module and its dependencies
   sources = [
@@ -21,13 +21,12 @@ rn_cxx_component("RnRNKeyEvent") {
     "RNKeyEvent.cpp"
   ]
 
-  public_configs = [ ":LibRnRNKeyEvent_config" ]
+  public_configs = [ ":LibRNKeyEvent_config" ]
   public_configs += [ "//build/secondary/folly:folly_config" ]
   deps = [
     "//folly",
     "//folly:async",
     "//folly:synchronization",
-    "//skia",
     "//react-native/ReactCommon/callinvoker",
     "//react-native/ReactCommon/jsi:jsi",
     "//react-native/ReactCommon/react/nativemodule/core",
