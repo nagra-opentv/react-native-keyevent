@@ -14,8 +14,13 @@ namespace facebook {
 namespace xplat {
 class RNKeyEventModule : public module::CxxModule{
  private:
-  int  keyEventId_= 0;
+  int  listenerCount_= 0;
   int callbackId_ = 0;
+  bool isKeyDownEventRegister_{false};
+  bool isKeyUpEventRegister_{false};
+  bool isKeyMultipleEventRegister_{false};
+  void startObserving();
+  void stopObserving();
   void sendEventWithName(std::string eventName, folly::dynamic eventData);
  public:
   RNKeyEventModule();
