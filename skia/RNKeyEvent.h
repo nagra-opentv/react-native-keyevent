@@ -30,11 +30,7 @@ class RNKeyEventModule : public module::CxxModule{
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-xplat::module::CxxModule* RNKeyEventModuleCls(void) {
-  return new RNKeyEventModule();
-}
-
+  RNS_EXPORT_MODULE(RNKeyEventModule)
 #ifdef __cplusplus
 }
 #endif
