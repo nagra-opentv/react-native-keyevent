@@ -13,18 +13,10 @@
 namespace facebook {
 namespace xplat {
 
-RNKeyEventModule::RNKeyEventModule() {
-  RNS_LOG_DEBUG("  calling constructor  ");
-}
+RNKeyEventModule::RNKeyEventModule() {}
 
 RNKeyEventModule::~RNKeyEventModule() {
-  RNS_LOG_DEBUG("   calling distructor  ");
-  auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
-  if ( !inputEventManager ) {
-    RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
-    return;
-  }
-  inputEventManager->removeKeyEventCallback(callbackId_);
+  stopObserving();
 }
 
 std::string RNKeyEventModule::getName() {
@@ -37,12 +29,6 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
           "addListener",
           [&] (folly::dynamic args) {
             RNS_LOG_DEBUG("addListener args "<< args[0]);
-            if(args[0].asString() == "onKeyDown")
-              isKeyDownEventRegister_ = true;
-            if(args[0].asString() == "onKeyUp")
-              isKeyUpEventRegister_ = true;
-            if(args[0].asString() == "onKeyMultiple")
-              isKeyMultipleEventRegister_ = true;
             listenerCount_++;
             if (listenerCount_ == 1) { 
               startObserving();
@@ -56,7 +42,6 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
             int  removeCount = args[0].asInt();;
             listenerCount_ = std::max(listenerCount_ - removeCount, 0);
             if (listenerCount_ == 0) {
-              RNS_LOG_ERROR("calling stop stopObserving");
               stopObserving();
             }
           }),
@@ -72,30 +57,44 @@ void RNKeyEventModule::startObserving(){
     callbackId_ = inputEventManager->addKeyEventCallback(
         [&](react::RSkKeyInput keyInput) {
         // lambda for RSkinputEvent manager registation.-starting
-          folly::dynamic obj = folly::dynamic::object("pressedKey", RNSKeyMap[keyInput.key_])("action",(int)keyInput.action_)("keyCode",(int)keyInput.key_);
-          std::string eventName;
-          if(isKeyDownEventRegister_ && !keyInput.action_ ){
-            eventName="onKeyDown";
-          }    
-          if(isKeyUpEventRegister_ && keyInput.action_){
-            eventName="onKeyUp";
+          if(keyInput.repeat_ == true){
+            repeatCount_++;
           }
-
-          if(isKeyMultipleEventRegister_ && keyInput.repeat_){
-            eventName="onKeyMultiple";
+          folly::dynamic eventPlayload = generateEventPayload(keyInput);
+          sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp",eventPlayload);
+          if(repeatCount_ > 0 && keyInput.action_ == RNS_KEY_Release){
+            folly::dynamic eventPlayload = generateEventPayload(keyInput,repeatCount_);
+            sendEventWithName("onKeyMultiple",eventPlayload);
+            repeatCount_ = 0;//rest back once you send the event.  
           }
-          sendEventWithName(eventName,obj);
         }
     );//lambda for RSkinputEvent manager registation-end
 }
+folly::dynamic RNKeyEventModule::generateEventPayload(react::RSkKeyInput keyInput,unsigned int repeatCount){
+  
+  folly::dynamic eventPlayload = folly::dynamic::object();
+  if(repeatCount > 0 ){
+    eventPlayload["repeatcount"] = repeatCount;
+    //TODO character param need to update
+  }
 
+  eventPlayload["keyCode"] = (int) keyInput.key_;
+  eventPlayload["action"] = (int) keyInput.action_;
+  eventPlayload["pressedKey"] = (std::string) RNSKeyMap[keyInput.key_];
+  return eventPlayload;
+}
 void RNKeyEventModule::stopObserving(){
   auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
   if ( !inputEventManager ) {
     RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
     return;
   }
-  inputEventManager->removeKeyEventCallback(callbackId_);
+  if(callbackId_ > 0){
+    inputEventManager->removeKeyEventCallback(callbackId_);
+  }
+  else{
+    RNS_LOG_ERROR("callbackId is invalid callbackId_ :: " << callbackId_);
+  }
 }
 
 void RNKeyEventModule::sendEventWithName(std::string eventName, folly::dynamic eventData) {

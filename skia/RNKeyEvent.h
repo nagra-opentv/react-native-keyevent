@@ -16,11 +16,10 @@ class RNKeyEventModule : public module::CxxModule{
  private:
   int  listenerCount_= 0;
   int callbackId_ = 0;
-  bool isKeyDownEventRegister_{false};
-  bool isKeyUpEventRegister_{false};
-  bool isKeyMultipleEventRegister_{false};
   void startObserving();
   void stopObserving();
+  unsigned int repeatCount_=0;
+  folly::dynamic generateEventPayload(react::RSkKeyInput keyInput,unsigned int repeatCount = 0);
   void sendEventWithName(std::string eventName, folly::dynamic eventData);
  public:
   RNKeyEventModule();
