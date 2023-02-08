@@ -30,7 +30,7 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
           [&] (folly::dynamic args) {
             RNS_LOG_DEBUG("addListener args "<< args[0]);
             listenerCount_++;
-            if (listenerCount_ == 1) { 
+            if (listenerCount_ == 1) {
               startObserving();
             }
           }),// end of addListener lambda
@@ -70,29 +70,30 @@ void RNKeyEventModule::startObserving(){
         }
     );//lambda for RSkinputEvent manager registation-end
 }
+
 folly::dynamic RNKeyEventModule::generateEventPayload(react::RSkKeyInput keyInput,unsigned int repeatCount){
-  
   folly::dynamic eventPlayload = folly::dynamic::object();
   if(repeatCount > 0 ){
     eventPlayload["repeatcount"] = repeatCount;
     //TODO character param need to update
   }
 
-  eventPlayload["keyCode"] = (int) keyInput.key_;
-  eventPlayload["action"] = (int) keyInput.action_;
-  eventPlayload["pressedKey"] = (std::string) RNSKeyMap[keyInput.key_];
+  eventPlayload["keyCode"] = static_cast<int>(keyInput.key_);
+  eventPlayload["action"] = static_cast<int>(keyInput.action_);
+  eventPlayload["pressedKey"] = static_cast<std::string>(RNSKeyMap[keyInput.key_])  ;
   return eventPlayload;
 }
+
 void RNKeyEventModule::stopObserving(){
-  auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
-  if ( !inputEventManager ) {
-    RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
-    return;
-  }
   if(callbackId_ > 0){
+    auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
+    if ( !inputEventManager ) {
+      RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
+      return;
+    }
     inputEventManager->removeKeyEventCallback(callbackId_);
-  }
-  else{
+    callbackId_ = 0;// resetting the callback
+  }else{
     RNS_LOG_ERROR("callbackId is invalid callbackId_ :: " << callbackId_);
   }
 }
@@ -107,6 +108,15 @@ void RNKeyEventModule::sendEventWithName(std::string eventName, folly::dynamic e
             folly::dynamic::array(eventName));
   }
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  RNS_EXPORT_MODULE(RNKeyEventModule)
+#ifdef __cplusplus
+}
+#endif
+
 
 }//xplat
 }//facebook

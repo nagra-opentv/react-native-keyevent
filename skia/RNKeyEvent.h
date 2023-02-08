@@ -27,12 +27,5 @@ class RNKeyEventModule : public module::CxxModule{
   auto getMethods() -> std::vector<Method>;
   std::string getName();
 };
-#ifdef __cplusplus
-extern "C" {
-#endif
-  RNS_EXPORT_MODULE(RNKeyEventModule)
-#ifdef __cplusplus
-}
-#endif
 }//xplat
 }//facebook
