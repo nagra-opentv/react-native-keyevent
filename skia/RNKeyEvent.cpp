@@ -24,28 +24,8 @@ std::string RNKeyEventModule::getName() {
 }
 
 auto RNKeyEventModule::getMethods() -> std::vector<Method> {
-  return {
-      Method(
-          "addListener",
-          [&] (folly::dynamic args) {
-            RNS_LOG_DEBUG("addListener args "<< args[0]);
-            listenerCount_++;
-            if (listenerCount_ == 1) {
-              startObserving();
-            }
-          }),// end of addListener lambda
-
-      Method(
-          "removeListeners",
-          [&] (folly::dynamic args) {
-            RNS_LOG_DEBUG(" removeListeners args "<< args[0]<<" listenerCount_ "<<listenerCount_);
-            int  removeCount = args[0].asInt();;
-            listenerCount_ = std::max(listenerCount_ - removeCount, 0);
-            if (listenerCount_ == 0) {
-              stopObserving();
-            }
-          }),
-  };
+  std::vector<Method> supportedMethodsVector  = NativeEventEmitter::getMethods();
+  return supportedMethodsVector;
 }
 
 void RNKeyEventModule::startObserving(){
@@ -95,17 +75,6 @@ void RNKeyEventModule::stopObserving(){
     callbackId_ = 0;// resetting the callback
   }else{
     RNS_LOG_ERROR("callbackId is invalid callbackId_ :: " << callbackId_);
-  }
-}
-
-void RNKeyEventModule::sendEventWithName(std::string eventName, folly::dynamic eventData) {
-  auto instance = getInstance().lock();
-  if ( instance ) {
-    instance->callJSFunction(
-            "RCTDeviceEventEmitter", "emit",
-            (eventData != nullptr) ?
-            folly::dynamic::array(folly::dynamic::array(eventName),eventData):
-            folly::dynamic::array(eventName));
   }
 }
 
