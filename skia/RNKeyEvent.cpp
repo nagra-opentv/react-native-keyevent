@@ -4,10 +4,6 @@
 * This source code is licensed uander the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-#include <folly/dynamic.h>
-#include <cxxreact/Instance.h>
-#include <cxxreact/JsArgumentHelpers.h>
-
 #include "RNKeyEvent.h"
 
 namespace facebook {
@@ -42,7 +38,7 @@ void RNKeyEventModule::startObserving(){
             repeatCount_++;
           }
           folly::dynamic eventPlayload = generateEventPayload(keyInput);
-          react::NativeEventEmitter::sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp", folly::dynamic(eventPlayload));
+          sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp", folly::dynamic(eventPlayload));
           if(repeatCount_ > 0 && keyInput.action_ == RNS_KEY_Release){
             folly::dynamic eventPlayload = generateEventPayload(keyInput,repeatCount_);
             sendEventWithName("onKeyMultiple",folly::dynamic(eventPlayload));

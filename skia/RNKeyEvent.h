@@ -10,8 +10,8 @@
 #include "ReactSkia/utils/RnsUtils.h"
 namespace facebook {
 namespace xplat {
-
-class RNKeyEventModule : public react::NativeEventEmitter{
+using namespace react;
+class RNKeyEventModule : public NativeEventEmitter{
  private:
   int callbackId_ = 0;
   void startObserving();
@@ -21,7 +21,7 @@ class RNKeyEventModule : public react::NativeEventEmitter{
  public:
   RNKeyEventModule();
   ~RNKeyEventModule();
-  auto getMethods() -> std::vector<Method>;
+  auto getMethods() -> std::vector<NativeEventEmitter::Method>;
   std::string getName();
 };
 
