@@ -12,8 +12,8 @@
 
 namespace facebook {
 namespace xplat {
-
-RNKeyEventModule::RNKeyEventModule() {}
+RNKeyEventModule::RNKeyEventModule():NativeEventEmitter(getInstance().lock().get()){
+}
 
 RNKeyEventModule::~RNKeyEventModule() {
   stopObserving();
@@ -29,6 +29,7 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
 }
 
 void RNKeyEventModule::startObserving(){
+    RNS_LOG_ERROR("calling the  startObserver");
     auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
     if ( !inputEventManager ) {
       RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
@@ -41,10 +42,10 @@ void RNKeyEventModule::startObserving(){
             repeatCount_++;
           }
           folly::dynamic eventPlayload = generateEventPayload(keyInput);
-          sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp",eventPlayload);
+          react::NativeEventEmitter::sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp", folly::dynamic(eventPlayload));
           if(repeatCount_ > 0 && keyInput.action_ == RNS_KEY_Release){
             folly::dynamic eventPlayload = generateEventPayload(keyInput,repeatCount_);
-            sendEventWithName("onKeyMultiple",eventPlayload);
+            sendEventWithName("onKeyMultiple",folly::dynamic(eventPlayload));
             repeatCount_ = 0;//rest back once you send the event.  
           }
         }

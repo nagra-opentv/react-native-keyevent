@@ -5,15 +5,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 #pragma once
-#include <cxxreact/CxxModule.h>
 #include "ReactSkia/core_modules/RSkInputEventManager.h"
 #include "ReactSkia/LegacyNativeModules/NativeEventEmitter.h"
 #include "ReactSkia/utils/RnsUtils.h"
-
-
 namespace facebook {
 namespace xplat {
-class RNKeyEventModule : public NativeEventEmitter{
+
+class RNKeyEventModule : public react::NativeEventEmitter{
  private:
   int callbackId_ = 0;
   void startObserving();
@@ -26,5 +24,7 @@ class RNKeyEventModule : public NativeEventEmitter{
   auto getMethods() -> std::vector<Method>;
   std::string getName();
 };
+
+
 }//xplat
 }//facebook
