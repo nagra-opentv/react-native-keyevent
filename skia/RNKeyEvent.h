@@ -11,7 +11,7 @@
 namespace facebook {
 namespace xplat {
 using namespace react;
-class RNKeyEventModule : public NativeEventEmitter{
+class RNKeyEventModule : public NativeEventEmitterModule{
  private:
   int callbackId_ = 0;
   void startObserving();
@@ -21,7 +21,7 @@ class RNKeyEventModule : public NativeEventEmitter{
  public:
   RNKeyEventModule();
   ~RNKeyEventModule();
-  auto getMethods() -> std::vector<NativeEventEmitter::Method>;
+  auto getMethods() -> std::vector<NativeEventEmitterModule::Method>;
   std::string getName();
 };
 

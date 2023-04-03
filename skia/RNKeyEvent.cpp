@@ -8,7 +8,7 @@
 
 namespace facebook {
 namespace xplat {
-RNKeyEventModule::RNKeyEventModule():NativeEventEmitter(getInstance().lock().get()){
+RNKeyEventModule::RNKeyEventModule():NativeEventEmitterModule(getInstance().lock().get()){
 }
 
 RNKeyEventModule::~RNKeyEventModule() {
@@ -20,7 +20,7 @@ std::string RNKeyEventModule::getName() {
 }
 
 auto RNKeyEventModule::getMethods() -> std::vector<Method> {
-  std::vector<Method> supportedMethodsVector  = NativeEventEmitter::getMethods();
+  std::vector<Method> supportedMethodsVector  = NativeEventEmitterModule::getMethods();
   return supportedMethodsVector;
 }
 
