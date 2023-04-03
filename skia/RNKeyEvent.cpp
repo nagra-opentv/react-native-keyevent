@@ -4,16 +4,12 @@
 * This source code is licensed uander the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-#include <folly/dynamic.h>
-#include <cxxreact/Instance.h>
-#include <cxxreact/JsArgumentHelpers.h>
-
 #include "RNKeyEvent.h"
 
 namespace facebook {
 namespace xplat {
-
-RNKeyEventModule::RNKeyEventModule() {}
+RNKeyEventModule::RNKeyEventModule():NativeEventEmitterModule(getInstance().lock().get()){
+}
 
 RNKeyEventModule::~RNKeyEventModule() {
   stopObserving();
@@ -24,31 +20,12 @@ std::string RNKeyEventModule::getName() {
 }
 
 auto RNKeyEventModule::getMethods() -> std::vector<Method> {
-  return {
-      Method(
-          "addListener",
-          [&] (folly::dynamic args) {
-            RNS_LOG_DEBUG("addListener args "<< args[0]);
-            listenerCount_++;
-            if (listenerCount_ == 1) {
-              startObserving();
-            }
-          }),// end of addListener lambda
-
-      Method(
-          "removeListeners",
-          [&] (folly::dynamic args) {
-            RNS_LOG_DEBUG(" removeListeners args "<< args[0]<<" listenerCount_ "<<listenerCount_);
-            int  removeCount = args[0].asInt();;
-            listenerCount_ = std::max(listenerCount_ - removeCount, 0);
-            if (listenerCount_ == 0) {
-              stopObserving();
-            }
-          }),
-  };
+  std::vector<Method> supportedMethodsVector  = NativeEventEmitterModule::getMethods();
+  return supportedMethodsVector;
 }
 
 void RNKeyEventModule::startObserving(){
+    RNS_LOG_ERROR("calling the  startObserver");
     auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
     if ( !inputEventManager ) {
       RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
@@ -61,10 +38,10 @@ void RNKeyEventModule::startObserving(){
             repeatCount_++;
           }
           folly::dynamic eventPlayload = generateEventPayload(keyInput);
-          sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp",eventPlayload);
+          sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp", folly::dynamic(eventPlayload));
           if(repeatCount_ > 0 && keyInput.action_ == RNS_KEY_Release){
             folly::dynamic eventPlayload = generateEventPayload(keyInput,repeatCount_);
-            sendEventWithName("onKeyMultiple",eventPlayload);
+            sendEventWithName("onKeyMultiple",folly::dynamic(eventPlayload));
             repeatCount_ = 0;//rest back once you send the event.  
           }
         }
@@ -95,17 +72,6 @@ void RNKeyEventModule::stopObserving(){
     callbackId_ = 0;// resetting the callback
   }else{
     RNS_LOG_ERROR("callbackId is invalid callbackId_ :: " << callbackId_);
-  }
-}
-
-void RNKeyEventModule::sendEventWithName(std::string eventName, folly::dynamic eventData) {
-  auto instance = getInstance().lock();
-  if ( instance ) {
-    instance->callJSFunction(
-            "RCTDeviceEventEmitter", "emit",
-            (eventData != nullptr) ?
-            folly::dynamic::array(folly::dynamic::array(eventName),eventData):
-            folly::dynamic::array(eventName));
   }
 }
 
