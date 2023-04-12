@@ -1,5 +1,5 @@
 import("//react-native/common.gni")
-config("LibRNKeyEvent_config") {
+config("LibRNKeyEventModule_config") {
   cflags_cc = [ "-std=c++17","-g"]
   cflags_cc += [
     "-Wno-extra-semi",
@@ -13,15 +13,15 @@ config("LibRNKeyEvent_config") {
   ]
 }
 
-rn_cxx_component("RNKeyEvent") {
+rns_cxx_tp_component("rnkeyevent") {
 
-  # RNS Native module and its dependencies
+  # Native module and its dependencies
   sources = [
-    "RNKeyEvent.h",
-    "RNKeyEvent.cpp"
+    "RNKeyEventModule.h",
+    "RNKeyEventModule.cpp"
   ]
 
-  public_configs = [ ":LibRNKeyEvent_config" ]
+  public_configs = [ ":LibRNKeyEventModule_config" ]
   public_configs += [ "//build/secondary/folly:folly_config" ]
   deps = [
     "//folly",

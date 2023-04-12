@@ -4,15 +4,19 @@
 * This source code is licensed uander the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-#include "RNKeyEvent.h"
+#include "RNKeyEventModule.h"
 
 namespace facebook {
 namespace xplat {
-RNKeyEventModule::RNKeyEventModule():NativeEventEmitterModule(getInstance().lock().get()){
-}
+
+RNKeyEventModule::RNKeyEventModule():NativeEventEmitterModule(getInstance().lock().get()){}
 
 RNKeyEventModule::~RNKeyEventModule() {
   stopObserving();
+}
+
+auto RNKeyEventModule::getConstants() -> std::map<std::string, folly::dynamic> {
+  return {};
 }
 
 std::string RNKeyEventModule::getName() {
@@ -24,31 +28,31 @@ auto RNKeyEventModule::getMethods() -> std::vector<Method> {
   return supportedMethodsVector;
 }
 
-void RNKeyEventModule::startObserving(){
-    RNS_LOG_ERROR("calling the  startObserver");
-    auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
-    if ( !inputEventManager ) {
-      RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
-      return;
+void RNKeyEventModule::startObserving() {
+  RNS_LOG_ERROR("calling the  startObserver");
+  auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
+  if (!inputEventManager) {
+    RNS_LOG_ERROR("Unable to get RSkInputEventManager instance ");
+    return;
+  }
+  callbackId_ = inputEventManager->addKeyEventCallback(
+    [&](react::RSkKeyInput keyInput) {
+    // lambda for RSkinputEvent manager registation.-starting
+      if(keyInput.repeat_ == true){
+        repeatCount_++;
+      }
+      folly::dynamic eventPlayload = generateEventPayload(keyInput);
+      sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp", folly::dynamic(eventPlayload));
+      if(repeatCount_ > 0 && keyInput.action_ == RNS_KEY_Release) {
+        folly::dynamic eventPlayload = generateEventPayload(keyInput,repeatCount_);
+        sendEventWithName("onKeyMultiple",folly::dynamic(eventPlayload));
+        repeatCount_ = 0;//rest back once you send the event.  
+      }
     }
-    callbackId_ = inputEventManager->addKeyEventCallback(
-        [&](react::RSkKeyInput keyInput) {
-        // lambda for RSkinputEvent manager registation.-starting
-          if(keyInput.repeat_ == true){
-            repeatCount_++;
-          }
-          folly::dynamic eventPlayload = generateEventPayload(keyInput);
-          sendEventWithName(keyInput.action_ == RNS_KEY_Press?"onKeyDown":"onKeyUp", folly::dynamic(eventPlayload));
-          if(repeatCount_ > 0 && keyInput.action_ == RNS_KEY_Release){
-            folly::dynamic eventPlayload = generateEventPayload(keyInput,repeatCount_);
-            sendEventWithName("onKeyMultiple",folly::dynamic(eventPlayload));
-            repeatCount_ = 0;//rest back once you send the event.  
-          }
-        }
-    );//lambda for RSkinputEvent manager registation-end
+  );//lambda for RSkinputEvent manager registation-end
 }
 
-folly::dynamic RNKeyEventModule::generateEventPayload(react::RSkKeyInput keyInput,unsigned int repeatCount){
+folly::dynamic RNKeyEventModule::generateEventPayload(react::RSkKeyInput keyInput,unsigned int repeatCount) {
   folly::dynamic eventPlayload = folly::dynamic::object();
   if(repeatCount > 0 ){
     eventPlayload["repeatcount"] = repeatCount;
@@ -61,7 +65,7 @@ folly::dynamic RNKeyEventModule::generateEventPayload(react::RSkKeyInput keyInpu
   return eventPlayload;
 }
 
-void RNKeyEventModule::stopObserving(){
+void RNKeyEventModule::stopObserving() {
   if(callbackId_ > 0){
     auto inputEventManager = react::RSkInputEventManager::getInputKeyEventManager();
     if ( !inputEventManager ) {
@@ -78,7 +82,7 @@ void RNKeyEventModule::stopObserving(){
 #ifdef __cplusplus
 extern "C" {
 #endif
-  RNS_EXPORT_MODULE(RNKeyEventModule)
+RNS_EXPORT_MODULE(RNKeyEvent)
 #ifdef __cplusplus
 }
 #endif

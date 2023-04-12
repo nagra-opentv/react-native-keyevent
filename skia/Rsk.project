@@ -1,0 +1,12 @@
+{
+  "codegenConfig": {
+    "name": "rnkeyevent",
+    "version": "0.3.0",
+    "type": "modules",
+    "skia": {
+      "TurboModuleRegistryGetEnforcingSpec" : [
+        "RNKeyEvent"
+      ]
+    }
+  }
+}
