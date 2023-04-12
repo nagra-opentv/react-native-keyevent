@@ -15,6 +15,10 @@ RNKeyEventModule::~RNKeyEventModule() {
   stopObserving();
 }
 
+auto RNKeyEventModule::getConstants() -> std::map<std::string, folly::dynamic> {
+  return {};
+}
+
 std::string RNKeyEventModule::getName() {
   return "RNKeyEvent";
 }

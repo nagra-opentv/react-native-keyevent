@@ -20,7 +20,8 @@ class RNKeyEventModule : public NativeEventEmitterModule {
  public:
   RNKeyEventModule();
   ~RNKeyEventModule();
-  auto getMethods() -> std::vector<NativeEventEmitterModule::Method>;
+  std::map<std::string, folly::dynamic> getConstants() override;
+  std::vector<Method> getMethods() override;
   std::string getName() override;
 
  private:
