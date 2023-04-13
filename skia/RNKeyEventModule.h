@@ -26,8 +26,8 @@ class RNKeyEventModule : public NativeEventEmitterModule {
 
  private:
   int callbackId_ = 0;
-  void startObserving();
-  void stopObserving();
+  void startObserving()override;
+  void stopObserving()override;
   unsigned int repeatCount_=0;
   folly::dynamic generateEventPayload(react::RSkKeyInput keyInput,unsigned int repeatCount = 0);
 };
