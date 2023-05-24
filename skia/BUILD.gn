@@ -5,7 +5,6 @@ config("LibRNKeyEventModule_config") {
     "-Wno-extra-semi",
     "-Wno-sign-compare",
     "-Wno-header-hygiene",
-    "-Wno-inconsistent-missing-override"
   ]
 
   include_dirs = [
